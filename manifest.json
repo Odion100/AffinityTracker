@@ -5,8 +5,19 @@
   "description": "A chrome extension that track user affinity for specified product keywords",
   "content_scripts": [
     {
-      "matches": ["http://*.urbanoutfitters.com/*"],
-      "js": ["test.js"]
+      "matches": [
+        "http://*.urbanoutfitters.com/*",
+        "https://*.urbanoutfitters.com/*"
+      ],
+      "js": ["content.js"]
     }
-  ]
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_title": "AffinityTracker"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "web_accessible_resources": ["affinity_tracker.js"]
 }
