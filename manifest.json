@@ -1,0 +1,12 @@
+{
+  "name": "affinity-tracker",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "A chrome extension that track user affinity for specified product keywords",
+  "content_scripts": [
+    {
+      "matches": ["http://*.urbanoutfitters.com/*"],
+      "js": ["test.js"]
+    }
+  ]
+}
