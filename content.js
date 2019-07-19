@@ -1,14 +1,8 @@
-alert(`I'm on Urban Outfitters' website.`);
-//document.addEventListener("DOMContentLoaded", function() {
-//insert script into the Dom
-alert("Document Content Loaded");
-console.log(window);
-let s = document.createElement("script");
-// TODO: add "affinity_tracker.js" to web_accessible_resources in manifest.json
-s.src = chrome.runtime.getURL("affinity_tracker.js");
-s.onload = function() {
+//insert affinity_tracker.js script into the Dom
+// REMINDER: affinity_tracker.js needs to be added to web_accessible_resources in manifest.json
+const _script = document.createElement("script");
+_script.src = chrome.runtime.getURL("affinity_tracker.js");
+_script.onload = function() {
   this.remove();
 };
-
-(document.head || document.documentElement).appendChild(s);
-//});
+(document.head || document.documentElement).appendChild(_script);
