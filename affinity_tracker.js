@@ -1,6 +1,5 @@
 //ensure this module has its onw namespace as to not conflict with global variables
 (() => {
-  
   const targetCategories = ["womens", "mens", "home", "lifestyle", "beauty"];
 
   const increaseAffinity = (categories, points) => {
@@ -27,16 +26,18 @@
   if (window.utag_data) {
     //use localStorage to save the last url you record affinity for
     //so that refreshing doesn't increment affinity (should i be doing this?)
+    let { product_category, page_breadcrumb } = window.utag_data;
     if (
       window.utag_data["dom.url"] !=
         localStorage.getItem("last_affinity_url") &&
-      Array.isArray(window.utag_data.product_category)
+      Array.isArray(product_category)
     ) {
-      increaseAffinity(window.utag_data.product_category, 1);
+      //I noticed that some product_category is not always reliable
+      increaseAffinity([...product_category, ...page_breadcrumb], 1);
       localStorage.setItem("last_affinity_url", window.utag_data["dom.url"]);
     }
 
-    console.log(`The product category is ${window.utag_data.product_category}`);
+    console.log(`The product category is ${product_category}`);
   }
 
   //select the add to cart button if it exists in the DOM
@@ -44,7 +45,7 @@
   if (cartButton) {
     //fire event everytime the user clicks add to cart button
     cartButton.addEventListener("click", e => {
-      increaseAffinity(window.utag_data.product_category, 3);
+      increaseAffinity([...product_category, ...page_breadcrumb], 3);
     });
   }
 })();
