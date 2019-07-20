@@ -22,7 +22,7 @@
   };
 
   //everytime the user visits new page this script will run
-  //if the utag_data object exists then record user affinity for product categories
+  //if the utag_data object exists then increase user affinity
   if (window.utag_data) {
     //use localStorage to save the last url you record affinity for
     //so that refreshing doesn't increment affinity (should i be doing this?)
@@ -32,7 +32,7 @@
         localStorage.getItem("last_affinity_url") &&
       Array.isArray(product_category)
     ) {
-      //I noticed that some product_category is not always reliable
+      //I noticed that the utag_data.product_category array is not always reliable
       increaseAffinity([...product_category, ...page_breadcrumb], 1);
       localStorage.setItem("last_affinity_url", window.utag_data["dom.url"]);
     }
@@ -43,9 +43,54 @@
   //select the add to cart button if it exists in the DOM
   const cartButton = document.querySelector(".c-product-add-to-cart__button");
   if (cartButton) {
+    let { product_category, page_breadcrumb } = window.utag_data;
     //fire event everytime the user clicks add to cart button
     cartButton.addEventListener("click", e => {
       increaseAffinity([...product_category, ...page_breadcrumb], 3);
     });
   }
+
+  //sort page content in accordance with each category's affinity score
+  const categorySort = () => {
+    const affinityScores = JSON.parse(localStorage.getItem("CSE_Challenge"));
+    //exit early if affinityScores doesn't already exists in local store
+    if (!affinityScores) return;
+    //create a list of sorted categories by affinity score
+    const sortedCategories = targetCategories
+      .sort((a, b) => affinityScores[b] - affinityScores[a])
+      .slice(0);
+
+    //select the elements containing each category content using custom attribute
+    const contentNodes = document.querySelectorAll(
+      '[data-qa-module-type="categoryProductTray"]'
+    );
+
+    //sort elements
+    for (let i = 0; i < contentNodes.length; i++) {
+      //find out which category this node belongs to
+      let category = findNodeCategory(contentNodes.item(i));
+      //replace category string in sortedCategories with it's corresponding node
+      let sorted_index = sortedCategories.indexOf(category);
+      sortedCategories[sorted_index] = contentNodes.item(i);
+    }
+    //debugger;
+    //loop through sorted nodes and append them to the parent element in order
+    sortedCategories.forEach(item =>
+      contentNodes.item(0).parentElement.appendChild(item)
+    );
+  };
+
+  const findNodeCategory = node => {
+    //I could find no other to findout to which category each node belong
+    //travers the element to find the title span
+    let header = node.querySelector(".c-product-tray__h2").innerText;
+    //get rid of the apostrophy (Men's and Women's ) and make lowercase
+    return header
+      .replace("'s", "s")
+      .toLowerCase()
+      .trim();
+  };
+  //only sort content on the specified page
+  if (utag_data["dom.url"] === "https://www.urbanoutfitters.com/new-arrivals")
+    categorySort();
 })();
