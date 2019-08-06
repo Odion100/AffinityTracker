@@ -1,27 +1,28 @@
-//ensure this module has its onw namespace as to not conflict with global variables
+//ensure this module has its own namespace as to not conflict with global variables
 (() => {
   const targetCategories = ["womens", "mens", "home", "lifestyle", "beauty"];
 
   const increaseAffinity = (categories, points) => {
     //get serialized CSE_Challange object for storing affinity data
-    const affinities = JSON.parse(localStorage.getItem("CSE_Challenge")) || {};
-    //convert categories array to string to be compared against targetCategories
+    const affinityScores =
+      JSON.parse(localStorage.getItem("CSE_Challenge")) || {};
+    //convert categories array to string to be compared against each targetCategories
     const str_categories = categories.join(" ").toLowerCase();
 
     //increment each target category's affinity by the given points
     targetCategories.forEach(category => {
       //ensure category value is not null
-      affinities[category] = affinities[category] || 0;
-      //use regx to match category keywords with falsely matching mens with womens
+      affinityScores[category] = affinityScores[category] || 0;
+      //use regx to match category keywords without falsely matching mens with womens
       let rx = new RegExp(`([^a-z0-9]|^)${category}`, "i");
       //if there's a match increase affinity for that category
-      if (rx.test(str_categories)) affinities[category] += points;
+      if (rx.test(str_categories)) affinityScores[category] += points;
     });
     //re-serialize and save the CSE_challange object
-    localStorage.setItem("CSE_Challenge", JSON.stringify(affinities));
+    localStorage.setItem("CSE_Challenge", JSON.stringify(affinityScores));
   };
 
-  //everytime the user visits new page this script will run
+  //everytime the user visits a new page this script will run
   //if the utag_data object exists then increase user affinity
   if (window.utag_data) {
     //use localStorage to save the last url you record affinity for
@@ -69,7 +70,7 @@
     for (let i = 0; i < contentNodes.length; i++) {
       //find out which category this node belongs to
       let category = findNodeCategory(contentNodes.item(i));
-      //replace category string in sortedCategories with it's corresponding node
+      //replace category string in sortedCategories array with the corresponding node
       let sorted_index = sortedCategories.indexOf(category);
       sortedCategories[sorted_index] = contentNodes.item(i);
     }
@@ -81,8 +82,8 @@
   };
 
   const findNodeCategory = node => {
-    //I could find no other to findout to which category each node belong
-    //travers the element to find the title span
+    //I could find no other way to findout to which category each node belongs
+    //travers the element to find the span containing the category title
     let header = node.querySelector(".c-product-tray__h2").innerText;
     //get rid of the apostrophy (Men's and Women's ) and make lowercase
     return header
@@ -90,6 +91,7 @@
       .toLowerCase()
       .trim();
   };
+
   //only sort content on the specified page
   if (utag_data["dom.url"] === "https://www.urbanoutfitters.com/new-arrivals")
     categorySort();
