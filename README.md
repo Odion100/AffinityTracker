@@ -2,7 +2,7 @@
 
 A chrome extension that tracks User Affinity for specified product keywords
 
-I was tasked with building this chrome extention as a challenge test for a job interview.
+I was tasked with building this chrome extention as a challenge.
 
 User Affinity basically tracks the likelyhood that the users is interested in a specified product category, namely mens, womens, lifestyle, bueaty and home. It is tracked by recording points everytime the user visists a product page for an item of one of these categories or adds an item to the cart. Affinity points will increase by 1 point for visiting a product page and by 3 points for adding an item to the cart.
 
